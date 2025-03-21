@@ -1,0 +1,6 @@
+Accuracy: 0.8450704225352113
+Confusion Matrix:
+True Positives: 2800
+True Negatives: 2720
+False Positives: 559
+False Negatives: 453
