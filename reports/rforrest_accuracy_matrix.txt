@@ -1,22 +1,21 @@
-Accuracy: 0.9090630740967545
-Precision: 0.8842712842712843
-Recall: 0.9407430150445195
-F1-Score: 0.9116334424278489
-AUC: -0.8515565534714427
+Accuracy: 0.9036
+Precision: 0.8759
+Recall: 0.9365
+F1-Score: 0.9052
 Confusion Matrix:
-True Positives: 3064
-True Negatives: 2874
-False Positives: 401
-False Negatives: 193
+True Positives: 3008
+True Negatives: 2894
+False Positives: 426
+False Negatives: 204
 
 Top features contributing to the model:
-1. Instability Index: 0.6
-2. Charge at pH 7: 0.5666666666666667
-3. M: 0.5666666666666667
-4. Molecular Weight: 0.5333333333333333
-5. Sheet Fraction: 0.5333333333333333
-6. D: 0.5333333333333333
-7. G: 0.5333333333333333
-8. Alpha Helix Score: 0.5
-9. Sequence: 0.5
-10. P: 0.5
+1. F: 0.6666666666666666
+2. D: 0.5666666666666667
+3. Q: 0.5666666666666667
+4. P: 0.5666666666666667
+5. Sheet Fraction: 0.5666666666666667
+6. Polarity: 0.5333333333333333
+7. Sequence: 0.5
+8. Instability Index: 0.5
+9. M: 0.5
+10. Alpha Helix Score: 0.5

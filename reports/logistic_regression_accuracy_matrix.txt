@@ -1,6 +1,9 @@
-Accuracy: 0.8185854255970606
+Accuracy: 0.8239
+Precision: 0.7840
+Recall: 0.8936
+F1-Score: 0.8352
 Confusion Matrix:
-True Positives: 2891
-True Negatives: 2456
-False Positives: 810
-False Negatives: 375
+True Positives: 2915
+True Negatives: 2467
+False Positives: 803
+False Negatives: 347

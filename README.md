@@ -39,6 +39,8 @@ The project requires the following Python packages:
 - pandas
 - numpy
 - math
+- matplotlib
+- seaborn
 
 ## License
 Specify the license under which the project is distributed.
