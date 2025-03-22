@@ -56,6 +56,53 @@ class RandomForestRegressor:
         print("Prediction complete.")
         return (avg_pred >= 0.5).astype(int)
 
+    def feature_importances(self):
+        feature_importances = np.zeros(X.shape[1])
+
+        for tree in self.trees:
+            feature_importances_for_tree = np.zeros(X.shape[1])
+            for idx, feature_index in enumerate(tree.feature_indices):
+                feature_importances_for_tree[feature_index] = 1
+            feature_importances += feature_importances_for_tree
+
+        feature_importances /= self.n_trees
+        return feature_importances
+
+
+def calculate_metrics(y_true, y_pred):
+    TP = np.sum((y_true == 1) & (y_pred == 1))
+    TN = np.sum((y_true == 0) & (y_pred == 0))
+    FP = np.sum((y_true == 0) & (y_pred == 1))
+    FN = np.sum((y_true == 1) & (y_pred == 0))
+
+    precision = TP / (TP + FP) if (TP + FP) != 0 else 0
+
+    recall = TP / (TP + FN) if (TP + FN) != 0 else 0
+
+    f1_score = (
+        2 * (precision * recall) / (precision + recall)
+        if (precision + recall) != 0
+        else 0
+    )
+
+    thresholds = np.linspace(0, 1, 100)
+    tpr = []
+    fpr = []
+
+    for threshold in thresholds:
+        y_pred_thresholded = (y_pred >= threshold).astype(int)
+        TP = np.sum((y_true == 1) & (y_pred_thresholded == 1))
+        FN = np.sum((y_true == 1) & (y_pred_thresholded == 0))
+        FP = np.sum((y_true == 0) & (y_pred_thresholded == 1))
+        TN = np.sum((y_true == 0) & (y_pred_thresholded == 0))
+
+        tpr.append(TP / (TP + FN) if (TP + FN) != 0 else 0)
+        fpr.append(FP / (FP + TN) if (FP + TN) != 0 else 0)
+
+    auc = np.trapz(tpr, fpr)
+
+    return precision, recall, f1_score, auc
+
 
 print("Loading data...")
 df = pd.read_csv("pipeline/final_merged_data.csv")
@@ -99,20 +146,11 @@ print("Predicting on the test set...")
 predictions = rf.predict(X_test)
 
 
-print("Individual tree predictions (first 10 test samples):")
-for i, tree in enumerate(rf.trees):
-    X_sub = X_test[:, tree.feature_indices]
-    tree_pred = tree.predict(X_sub)
-    print(f"Tree {i+1}: {tree_pred[:10]}")
-
-print("\nRandom Forest aggregated predictions (first 10 test samples):")
-print(predictions[:10])
-
-
 print("Evaluating model performance...")
 
 accuracy = np.mean(predictions == y_test)
 
+precision, recall, f1, auc = calculate_metrics(y_test, predictions)
 
 TP = np.sum((y_test == 1) & (predictions == 1))
 TN = np.sum((y_test == 0) & (predictions == 0))
@@ -127,13 +165,24 @@ confusion = (
     f"False Negatives: {FN}"
 )
 
-
-evaluation_summary = f"Accuracy: {accuracy}\n{confusion}\n"
+evaluation_summary = f"Accuracy: {accuracy}\nPrecision: {precision}\nRecall: {recall}\nF1-Score: {f1}\nAUC: {auc}\n{confusion}\n"
 print("Evaluation Metrics:")
 print(evaluation_summary)
 
+feature_importances = rf.feature_importances()
+important_features_indices = np.argsort(feature_importances)[::-1]
+top_features = df.columns[important_features_indices]
+
+print("Top features contributing to the model:")
+for i, feature in enumerate(top_features[:10]):
+    print(f"{i+1}. {feature}: {feature_importances[important_features_indices[i]]}")
 
 print("Writing evaluation metrics to accuracy_matrix.txt...")
 with open("reports/rforrest_accuracy_matrix.txt", "w") as f:
     f.write(evaluation_summary)
+    f.write("\nTop features contributing to the model:\n")
+    for i, feature in enumerate(top_features[:10]):
+        f.write(
+            f"{i+1}. {feature}: {feature_importances[important_features_indices[i]]}\n"
+        )
 print("Done.")
